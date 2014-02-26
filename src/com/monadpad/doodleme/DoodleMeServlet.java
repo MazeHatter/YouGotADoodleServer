@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.google.appengine.api.blobstore.BlobKey;
 import com.google.appengine.api.blobstore.BlobstoreService;
 import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
+import com.google.appengine.api.datastore.Blob;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
@@ -16,6 +17,7 @@ import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.Text;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Query;
+
 
 @SuppressWarnings("serial")
 public class DoodleMeServlet extends HttpServlet{
@@ -46,7 +48,7 @@ public class DoodleMeServlet extends HttpServlet{
 			}
 			else if (img) {
 				resp.setContentType("image/png;base64");
-				resp.getWriter().print(((Text)groove.getProperty("img")).getValue().substring(22)) ;
+				resp.getWriter().print(((Text)groove.getProperty("img")).getValue().substring(0));
 			}
 			else if (groove.getProperty("code") == null) {
 				resp.setContentType("text/plain");
