@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />        
+<title>Cloud Movie Company</title>
+<script src="speak/speakClient.js"></script>
+<script src="speak/speakGenerator.js"></script>
+<script src="html5moviemaker.js"></script>
+
+
+<style>
+html { overflow-y: scroll; }
+body {margin:0px; font:12pt Arial;}
+#page {margin:auto; width:1000px; position:relative;}
+h1 {font-size:14pt; margin:-3px; text-align:center;}
+#character-canvas {height:200px; 
+	width:150px;
+	background-color:black;}
+.char-canvas {height:80px; 
+	width:60px;
+	background-color:black;}
+.character {margin:8px; height:80px; width:60px; float:left;
+	border-width:0px;
+	border-color:#FF0000;
+	border-style:solid;
+	border-radius:5px;
+}
+#character-list {position:absolute; height:96px; left:300px; top:50px; width:690px;
+	border-width:1px;
+	border-color:#000000;
+	border-style:solid;
+	border-radius:2px;
+}
+
+.sound {margin:8px; height:80px; width:60px; float:left;
+	border-width:0px;
+	border-color:#FF0000;
+	border-style:solid;
+	border-radius:5px;
+	background-position:center;
+	background-repeat:no-repeat;
+
+}
+#sound-list {height:96px; width:360px;
+	border-width:1px;
+	border-color:#000000;
+	border-style:solid;
+	border-radius:2px;
+}
+#video-list {height:96px; width:760px;
+	border-width:1px;
+	border-color:#000000;
+	border-style:solid;
+	border-radius:2px;
+}
+.vid {position:absolute; visibility:hidden;}
+.video {margin:8px; height:80px; width:60px; float:left;
+	border-width:0px;
+	border-color:#FF0000;
+	border-style:solid;
+	border-radius:5px;
+	background-position:center;
+	background-repeat:no-repeat;
+
+}
+
+#sprite-size {width:100%; height:20px; position:relative;}
+#sprite-size-minus {height:20px; width:50%;
+	background-color:#AAAAAA;
+	margin:0px; 
+	border-width:0px;
+	border-style:solid;
+	border-color:#FFFF00;
+	border-radius:2px;
+}
+#sprite-size-plus {height:20px; width:50%;
+	background-color:#999999;
+	margin:0px; 
+	border-width:0px;
+	border-style:solid;
+	border-color:#FF0000;
+	border-radius:2px;
+	position:absolute;
+	left:50%;
+	top:0px;
+
+}
+
+#visible-sprite {height:36px; margin:0px;}
+
+#visible-canvas {height:20px; width:75px;
+	background-color:black;
+	color:white;
+	margin:8px; 
+	border-width:0px;
+	border-style:solid;
+	border-color:#FF0000;
+	border-radius:5px;
+}
+.sprite-canvas {height:100px; 
+	width:75px;
+	background-color:black;
+	margin:8px; 
+	border-width:0px;
+	border-style:solid;
+	border-color:#FF0000;
+	border-radius:5px;
+}
+
+.sprite {margin:0px; padding:0px; height:116px;}
+
+#scene-canvas {height:400px; 
+	width:800px;
+	background-color:black;}
+#scene-script {height:98px; 
+	width:480px;
+}
+#scene-drag {position:absolute; left:680px; top:150px;}
+
+
+.color_box {
+	line-height:10px;
+	font-size:8pt;
+	text-align:center;
+	position:absolute;
+	height:33px;
+	width:33px;
+	border-width:1px;
+	border-color:#808080;
+	border-style:solid;
+	border-radius:5px;
+}
+#colors {position:absolute; left:156px; top:25px; color:black;}
+#color-0{left:0px;top:0px;background-color:#FFFFFF;}#color-1{left:0px;top:35px;background-color:#FF0000;}
+#color-2{left:0px;top:70px;background-color:#FFFF00;}#color-3{left:0px;top:105px;background-color:#00FF00;}
+#color-4{left:34px;top:0px;background-color:#0000FF;}#color-5{left:34px;top:35px;background-color:#FF8000;}
+#color-6{left:34px;top:70px;background-color:#9E9E9E;}#color-7{left:34px;top:105px;background-color:#00FFFF;}
+
+	
+.area, .step {display:none;
+/*	width:1000px;*/
+	border-width:1px;
+	border-color:#808080;
+	border-style:solid;
+	border-radius:5px;
+	background-color:#DEDEDE;
+	padding:7px;
+	position:relative;
+}
+
+#chooser-dialog  {display:none;
+	width:400px;
+	height:400px;
+	border-width:1px;
+	border-color:#808080;
+	border-style:solid;
+	border-radius:5px;
+	background-color:#DEDEDE;
+	padding:10px;
+	position:absolute;
+	left:200px;
+	top:8px;
+}
+.saved-character {background-color:black; border-radius:5px;}
+
+
+
+#set-the-scene { display:none;}
+#video,#dialog,#soundtrack,#share {display:none;}
+
+#draw-characters{position:absolute; top:80px; left:160px; width:250px; visibility:hidden;
+	border-width:1px;
+	border-color:#808080;
+	border-style:solid;
+	border-radius:5px;
+	background-color:#DEDEDE;
+	padding:7px;
+}
+
+#file{position:absolute; top:39px; left:220px;}
+
+#scene-view {position:relative; left:100px; overflow:hidden; width:802px;}
+#sprites {text-align:center; position:absolute; 
+	left:910px; top:5px; margin:0px; padding:0px;}
+
+.area1controls {position:absolute; right:2px; top:2px; 
+	}
+.saved-project, .toolbutton,.button {float:left; background-color:#DEDEDE;
+	padding:10px; margin:2px;
+	border-width:1px; border-radius:3px; border-color:black; border-style:solid;}
+.toolbutton {width: 70px; text-align:center;}
+
+
+#after-show {position:absolute; top:200px; left:250px; visibility:hidden;}
+
+
+#scene-controls {position:relative; left:100px; 
+	width:800px; height:40px; background-color:#707070;}
+
+#dialog-input {width:300px; }
+.thin-black-border {border-width:1px; border-color:black; border-style:solid;}
+.hideme {display:none;}
+
+#no-web-audio {color:red; display:none; width:200px;}
+#instruments {position:relative; height:40px;}
+.inst_box {
+	line-height:10px;font-size:8pt;text-align:center;position:absolute;
+	height:33px;width:33px;
+	border-width:1px;border-color:#808080;border-style:solid;border-radius:5px;
+}
+#inst-0{left:0px;top:0px;background-color:#FFFFFF;} #inst-1{left:35px;top:0px;background-color:#FF0000;}
+#inst-2{left:70px;top:0px;background-color:#FFFF00;} #inst-3{left:105px;top:0px;background-color:#00FF00;}
+#inst-4{left:140px;top:0px;background-color:#0000FF;} #inst-5{left:175px;top:0px;background-color:#FF8000;}
+#inst-6{left:210px;top:0px;background-color:#9E9E9E;} #inst-7{left:245px;top:0px;background-color:#00FFFF;}
+#inst-8{left:280px;top:0px;background-color:#800080;} #inst-9{left:315px;top:0px;background-color:#632DFF;}
+#inst-10{left:350px;top:0px;background-color:#63FF08;}
+
+/*#bymonadpad {position:absolute; right:5px; bottom:5px; font-size:9pt;}*/
+#add-sound-by-file {
+border-color:black; border-style:solid;
+position:absolute; left:405px; top:45px; border-width:0px 0px 0px 1px; padding:10px;}
+
+#facebook_button {background-image:url('img/f_logo.png'); 
+	height:42px;width:42px;top:0px;left:35px;padding:0px;}
+#twitter_button {background-image:url('img/twitter_logo.png');
+	background-color:#FFFFFF; height:42px;width:42px;top:0px;left:82px;padding:0px;}
+#email_button {background-image:url('img/email.png');
+	background-color:#FF80FF; height:42px;width:42px;top:0px;left:128px;padding:0px;}
+#sbuttons {padding:10px; margin:2px; height:45px; top:4px; left:255px; position:absolute;}
+.sbutton {padding:10px; margin:2px;position:absolute;
+	border-width:1px; border-radius:3px; border-color:black; border-style:solid;}
+#load-area {position:absolute; left:500px; top:117px;}
+#embed-area {position:absolute; left:200px; top:117px;}
+#new-animation-share {width:350px;}
+#movie-title {width: 250px;}
+
+#toolbar {position:absolute;
+	left:0px;
+	top:0px;
+	width:100px;
+}
+
+#direct-action-hint {text-align:center;}
+.hint {background-color:#FFD633;}
+#save-character {position:absolute; top:150px; right:20px;}
+#drop-character {position:absolute; top:10px; left:270px;}
+
+#chooser-dialog-close-button {position:absolute; bottom:15px; right:15px;}
+
+#loaded-images {display:none;}
+</style>
+</head>
+
+
+
+<body>
+<div id="page">
+<h1 class="hideme">Doodlemation Studio (v0.6)</h1>
+
+<div id="scene-view" >
+	<canvas class="thin-black-border" height="400" width="800" id="scene-canvas">
+	</canvas>
+
+
+	<div id="after-show">
+		<div id="replay-button" class="button" onclick="playButton()">
+		Replay
+		</div>
+		<div id="make-new-button" class="button" onclick="window.location='moviemaker.htm'">
+			Make New
+		</div>
+		<div id="edit-button" class="button" onclick="editButton()">
+			Edit This
+		</div>
+	</div>
+
+</div>
+
+	<canvas class="thin-black-border" height="30" width="800" id="scene-controls">
+	</canvas>
+
+	<div id="sprites" class="hideme">
+		Character Sprites:
+		<div id="sprite-size">
+			<div id="sprite-size-minus" onclick="spriteSizeMinus()">-</div>
+			<div id="sprite-size-plus" onclick="spriteSizePlus()">+</div>
+		</div>
+		<div id="visible-sprite">
+			<canvas id="visible-canvas" onclick="visibleCanvas()">hide
+			</canvas>
+		</div>
+	</div>
+
+<div id="area1" class="area" class="hideme">
+	<div id="set-the-scene" >
+		<b>Set the scene</b>
+		<br/>
+		<div >
+			Choose an image for the background
+			<br/><input id="backdrop-file" >
+			<a href="javascript:void(0)" onclick="addBackdrop()">Use image</a>
+		</div>
+		<br/>
+		<div id="set-the-scene-js">
+			Or Use JavaScript:
+			<br/>
+			<textarea id="scene-script">
+//movie.scene.context.shadowBlur = 10;
+//draw the sky
+movie.scene.context.fillStyle  = "skyblue";
+movie.scene.context.fillRect(0, 0, 800, 300)
+//draw the ground
+movie.scene.context.fillStyle = "green";
+movie.scene.context.fillRect(0, 300, 800, 400)
+movie.scene.context.shadowBlur = 0;
+			</textarea>
+		</div>
+		<div id="scene-drag">
+			Or Drag an Image Here
+      </div>
+	</div>
+
+	<div id="characters" >
+		<b>Add characters</b><br/> 
+		From an image file (URL): 
+		<br/>
+		<input id="char-filename"> 
+		<a href="javascript:void(0)" onclick="addCharacterFromFile()">add</a>
+		<br/>
+		<br/>Or <a href="javascript:void(0)" onclick="showDrawCharactersButton()">Draw Your Own Characters!</a>
+		<br/>
+		<br/>Or <a href="javascript:void(0)" onclick="openCharacters()">Open a Saved Character</a>
+		<br/>
+		<br/>Or <a href="javascript:void(0)" onclick="addDinos()">Try T-Rex!</a>
+
+		<div id="character-list">
+		</div>
+		<div id="direct-action-hint" class="hint">
+			<b>Direct action</b> by selecting characters and drawing where to go
+		</div>  
+		<div id="save-character">
+			<a href="javascript:void(0)" onclick="saveCharacter()">
+			Save Current Character</a>
+		</div>
+		<div id="drop-character">
+			Or Drop an Image Here
+		</div>
+
+		
+	</div>
+
+	<div id="dialog" >
+		<b>Add this text to the scene</b> 
+		<br/>
+		<input id="dialog-input"> 
+		<div id="dialog-list">
+		</div>
+		<div id="dialog_instructions">
+			<b>Touch</b> WHEN and WHERE you want the text, and lift up when you want it to disappear.
+		</div>
+		<div>
+			Enable Text-to-Speach: <input type="checkbox" id="speak" onchange="movie.speak = this.checked">
+		</div>
+	</div>
+
+	<div id="share" >
+		<b>Movie Title</b> 
+		<br/>
+		<input id="movie-title"> 
+	    
+		<div id="sbuttons">
+		<div id="facebook_button" class="sbutton" onClick="facebookButton()"></div>
+		<div id="twitter_button" class="sbutton" onClick="twitterButton()"></div>
+		<div id="email_button" class="sbutton" onClick="emailButton()"></div>
+		</div>
+
+		<br/><br/>
+		<b>link</b> to this movie
+		<input id="new-animation-share"/>
+		<br/>
+		<br/>
+		The <b>JSON</b> for this movie
+		<br/>
+		<textarea id="get-json"></textarea>
+		<div id="load-area">
+		<a href="javascript:void(0)" onclick="load()">
+		Load <b>JSON</b></a>
+		<br/>
+		<textarea id="load-json"></textarea>
+		</div>
+		<div id="embed-area">
+		Embed <b>HTML</b> (beta)
+		<br/>
+		<textarea id="embed-json"></textarea>
+		</div>
+	</div>
+
+	<div id="soundtrack" >
+		<b>Add sound to the scene</b> 
+		<br/>
+		Simply draw on the scene to create sounds.
+		<br/><br/>
+		Up and Down controls the pitch (frequency). <br/>Left and Right controls the stereo panning. 
+
+		<div id="no-web-audio">
+			Sorry, to "draw" sounds you need Web Audio API, which is currently supported by Chrome or Safari. 
+			You can still add existing sounds from a URL 
+		</div>
+		<div id="soundtrack-instructions">Draw multiple times for overdubs.
+			<br/>Different colors make different sounds.
+			<br/><br/>
+			<div id="instruments">
+				<div id="inst-0" class="inst_box" onClick="chooseInstrument(0)">sine<br/>soft<br/>delay</div>
+				<div id="inst-1" class="inst_box" onClick="chooseInstrument(1)">sine</div>
+				<div id="inst-2" class="inst_box" onClick="chooseInstrument(2)">sqr<br/>soft</div>
+				<div id="inst-3" class="inst_box" onClick="chooseInstrument(3)">sqr</div>
+				<div id="inst-4" class="inst_box" onClick="chooseInstrument(4)">sqr<br/>soft</div>
+				<div id="inst-5" class="inst_box" onClick="chooseInstrument(5)">sqr</div>
+				<div id="inst-6" class="inst_box" onClick="chooseInstrument(6)">sqr<br/>soft<br/>delay</div>
+				<div id="inst-7" class="inst_box" onClick="chooseInstrument(7)">saw<br/>soft</div>
+				<div id="inst-8" class="inst_box" onClick="chooseInstrument(8)">saw</div>
+				<div id="inst-9" class="inst_box" onClick="chooseInstrument(9)">saw<br/>soft<br/>delay</div>
+				<div id="inst-10" class="inst_box" onClick="chooseInstrument(10)">saw<br/>delay</div>
+			</div>
+			<div id="bymonadpad">
+				<a href="http://monadpad.com">monadpad.com</a> - 
+				<a href="http://cloudmusiccompany.appspot.com">Cloud Music Company</a>
+			</div>
+		</div>
+
+		<div id="add-sound-by-file">
+			Or add Sound by URL:<br/><input id="sound-file" > 
+			<a href="javascript:void(0)" onclick="addSoundFile()">Get Sound File</a>
+			<div id="sound-list">
+			</div>
+			Click on the scene when the sound should play
+		</div>
+	</div>
+
+	<div id="video" >
+		<b>Add video to the scene</b> <br/>
+
+			Or add Video by URL:<br/><input id="video-file" > 
+			<a href="javascript:void(0)" onclick="addVideoFile()">Get Video File</a>
+			<div id="video-list">
+			</div>
+			Click on the scene when the video should play
+	</div>
+
+	<div class="area1controls">
+		<div id="set-the-scene-button" class="button" onclick="setTheSceneButton()">
+			Scene
+		</div>
+		<div id="characters-button" style="background-color:white;" class="button" onclick="charactersButton()">
+			Characters
+		</div>
+		<div id="dialog-button" class="button" onclick="dialogButton()">
+			Dialog
+		</div>
+		<div id="soundtrack-button" class="button" onclick="soundtrackButton()">
+			Audio
+		</div>
+		<div id="video-button" class="button" onclick="videoButton()">
+			Video
+		</div>
+		<div id="share-button" class="button" onclick="shareButton()">
+			Share
+		</div>
+	</div>
+
+</div>
+
+<div id="draw-characters">
+	<div onclick="addCharacter()" class="button">Add This Character</div>
+	<canvas height="200" width="150" id="character-canvas">
+	</canvas>
+
+	<a href="javascript:void(0)" onclick="clearCharacterCanvas()">clear</a>
+	<a href="javascript:void(0)" onclick="undoCharacterCanvas()">undo</a>
+	<br/>
+	<div class="button"
+		onclick="document.getElementById('draw-characters').style.visibility = 'hidden'">
+	Close
+	</div>
+	<div id="colors">
+		<div id="color-0" class="color_box" onclick="chooseColor(0)" style="background-color: rgb(255, 255, 255); "></div>
+		<div id="color-1" class="color_box" onclick="chooseColor(1)" style="background-color: rgb(128, 128, 128); "></div>
+		<div id="color-2" class="color_box" onclick="chooseColor(2)" style="background-color: rgb(255, 0, 0); "></div>
+		<div id="color-3" class="color_box" onclick="chooseColor(3)" style="background-color: rgb(255, 255, 0); "></div>
+		<div id="color-4" class="color_box" onclick="chooseColor(4)" style="background-color: rgb(0, 255, 0); "></div>
+		<div id="color-5" class="color_box" onclick="chooseColor(5)" style="background-color: rgb(0, 255, 255); "></div>
+		<div id="color-6" class="color_box" onclick="chooseColor(6)" style="background-color: rgb(0, 0, 255); "></div>
+		<div id="color-7" class="color_box" onclick="chooseColor(7)" style="background-color: rgb(128, 0, 128); "></div>
+	</div>
+</div>
+
+<!--context.translate(width, 0);
+context.scale(-1, 1);
+music notes, continue channels
+
+-->
+
+<div id="toolbar" class="hideme">
+   <div class="toolbutton" onclick="newProject()">New</div>
+   <div class="toolbutton" onclick="save()">Save</div>
+   <div class="toolbutton" onclick="openProject()">Open</div>
+   <div class="toolbutton" onclick="about()">About</div>
+<!--   <div class="toolbutton">Undo</div>
+   <div class="toolbutton">Redo</div> -->
+</div>
+
+<div id="chooser-dialog" class="area">
+	<div id="dialog-title">
+	</div>
+	<div id="chooser-dialog-list">
+	</div>
+	<div id="chooser-dialog-close-button" class="button" 
+			onclick="document.getElementById('chooser-dialog').style.display='none'">
+		Close
+	</div>
+</div>
+
+</div> <!-- end of page div -->
+
+<div id="audio"></div>
+<div id="loaded-images">
+	<img id="sound-image" src="img/sound.png" >
+</div>
+</body>
+</html>

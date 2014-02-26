@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />        
+
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+
+
+<link rel="stylesheet" href="d.css" type="text/css" />
+
+<meta property="og:image" content="http://yougotadoodle.appspot.com/img/yougotadoodle.png" />
+<meta property="og:description" content="Make your emails, texts, and tweets more personal, more fun, and more you!" />
+<title>You Got A Doodle!</title>
+
+
+<link rel="apple-touch-icon" href="http://yougotadoodle.appspot.com/img/yougotadoodle.png" />
+<!--<link ref="apple-touch-startup-image" href="http://yougotadoodle.appspot.com/img/drawmusicsplash.png" />-->
+<meta name="apple-mobile-web-app-capable" content="yes" />
+   
+</head>
+
+<body>
+
+
+<div class="header">
+	<img src="img/supericon100.png" class="menu-image" />&nbsp;You Got A Doodle!
+	<div id="header-menu">
+		<span id="open-button">
+		   <img class="menu-image" src="img/ic_menu_archive.png" />
+		   <span class="menu-text">Open</span>
+		</span>
+		<span class="menu-divider">|</span>
+		<span id="share-button">
+		   <img class="menu-image" src="img/ic_action_share.png" />
+		   <span class="menu-text">Save and Share</span>
+		</span>
+		<span id="help-button">
+			<span class="menu-divider">|</span>
+			<a href="about.htm"><img class="menu-image" src="img/ic_menu_help.png" /></a>
+		</span>
+	</div>
+</div>
+
+<div id="sidebar">
+<div id="change-settings-caption">Change Settings:</div>
+<div id="settings-button" class="button">
+
+</div>
+<div id="colors-button" class="button">
+Colors
+</div>
+
+<div id="sidebar-bottom">
+   <div id="undo-button" class="button">
+   Undo
+   </div>
+   <div id="clear-button" class="button">
+   Clear
+   </div>
+</div>
+</div>
+
+
+<div id="canvas-container">
+	<canvas id="main-canvas">
+	</canvas>
+
+	<div id="settings">
+	   <div id="settings-close-button" class="button2">Close</div>
+	   <div id="settings-content">
+		  Animate
+		  <br/>
+	      <select id="animate-mode" default-value="None" ></select>
+	   </div>
+	</div>
+	
+	
+	<div id="colors">
+	   <div id="color-0" class="color_box" onClick="chooseColor(0)">
+	   </div>
+	   <div id="color-1" class="color_box" onClick="chooseColor(1)">
+	   </div>
+	   <div id="color-2" class="color_box" onClick="chooseColor(2)">
+	   </div>
+	   <div id="color-3" class="color_box" onClick="chooseColor(3)">
+	   </div>
+	   <div id="color-4" class="color_box" onClick="chooseColor(4)">
+	   </div>
+	   <div id="color-5" class="color_box" onClick="chooseColor(5)">
+	   </div>
+	   <div id="color-6" class="color_box" onClick="chooseColor(6)">
+	   </div>
+	   <div id="color-7" class="color_box" onClick="chooseColor(7)">
+	   </div>
+	   <div id="color-8" class="color_box" onClick="chooseColor(8)">
+	   </div>
+	   <div id="color-9" class="color_box" onClick="chooseColor(9)">
+	   </div>
+	   <div id="color-10" class="color_box" onClick="chooseColor(10)">
+	   </div>
+	</div>
+	
+</div>
+
+
+<div id="share-dialog">
+   Save to the Gallery
+   <br/>
+   <input type="text" id="new-groove" value="new groove"/>
+   <br/>
+   <input type="text" id="new-artist" value="your name"/>
+   <div id="save-button" class="button2">Save</div>
+   <div id="share-buttons">
+	   <hr />
+	   Send to friends
+	   <br/>
+	   <div id="sbuttons">
+		      <div id="facebook_button" class="sbutton" onClick="mp.facebookButton()"></div>
+		      <div id="twitter_button" class="sbutton" onClick="mp.twitterButton()"></div>
+		      <div id="email_button" class="sbutton" onClick="mp.emailButton()"></div>
+	   </div>
+	</div>
+	<div id="share-close-button" class="button2">Close</div>
+</div>
+
+
+
+<div id="android_ad" class="button">Get the Android App!<br/>
+<a href="https://play.google.com/store/apps/details?id=com.monadpad.teledoodle"><img style="height:80px;width:80px;" src="img/market114.jpg" /></a>
+<a href="http://www.amazon.com/gp/mas/dl/android?p=com.monadpad.teledoodle"><img style="height:80px;width:80px;" src="img/amazon114.png" /></a>
+<br/>or<br/>
+<a href='http://yougotadoodle.appspot.com/d.jsp?id=<%= id %>'>I already have the App!</a>
+<br/>or<br/>
+<a href="#" id="close_android_ad">(no thanks, close dialog)</a>
+</div>
+
+<%
+if (doodle != null){
+	%>
+	setup("<%= ((Text)doodle.getProperty("xy")).getValue()%> ");
+	id = <%= id%>;		
+	<%
+}
+%>
+
+<script src="d.js"></script>
+</body>
+</html>
