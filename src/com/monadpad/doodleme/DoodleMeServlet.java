@@ -33,6 +33,10 @@ public class DoodleMeServlet extends HttpServlet{
 		boolean img = req.getParameter("img") != null && 
 				req.getParameter("img").equals("true"); 
 		
+		boolean debugimg = req.getParameter("debugimg") != null && 
+				req.getParameter("debugimg").equals("true"); 
+		
+		
 		String id = req.getParameter("id");
 		if (id == null){
 			resp.setContentType("text/plain");
@@ -47,8 +51,14 @@ public class DoodleMeServlet extends HttpServlet{
 				resp.getWriter().print("bad") ;
 			}
 			else if (img) {
-				resp.setContentType("image/png;base64");
-				resp.getWriter().print(((Text)groove.getProperty("img")).getValue().substring(22));
+				if (debugimg) {
+					resp.setContentType("text/plain");
+					resp.getWriter().print(((Text)groove.getProperty("img")).getValue());
+				}
+				else {
+					resp.setContentType("image/png;base64");
+					resp.getWriter().print(((Text)groove.getProperty("img")).getValue().substring(22));
+				}
 			}
 			else if (groove.getProperty("code") == null) {
 				resp.setContentType("text/plain");
