@@ -48,7 +48,7 @@ public class DoodleMeServlet extends HttpServlet{
 			}
 			else if (img) {
 				resp.setContentType("image/png;base64");
-				resp.getWriter().print(((Text)groove.getProperty("img")).getValue().substring(0));
+				resp.getWriter().print(((Text)groove.getProperty("img")).getValue().substring(22));
 			}
 			else if (groove.getProperty("code") == null) {
 				resp.setContentType("text/plain");
