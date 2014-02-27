@@ -6,9 +6,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.google.appengine.api.blobstore.BlobKey;
-import com.google.appengine.api.blobstore.BlobstoreService;
-import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
 import com.google.appengine.api.datastore.Blob;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -18,12 +15,12 @@ import com.google.appengine.api.datastore.Text;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Query;
 
+import org.apache.commons.codec.binary.Base64;
 
 @SuppressWarnings("serial")
 public class DoodleMeServlet extends HttpServlet{
 
 	
-	private BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService();
 
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws IOException {
@@ -51,14 +48,20 @@ public class DoodleMeServlet extends HttpServlet{
 				resp.getWriter().print("bad") ;
 			}
 			else if (img) {
+//				byte[] imgarray = ((Blob)groove.getProperty("img")).getBytes();
+//				String stuff = Base64.encodeBase64String(imgarray);
 				if (debugimg) {
 					resp.setContentType("text/plain");
-					resp.getWriter().print(((Text)groove.getProperty("img")).getValue());
 				}
 				else {
-					resp.setContentType("image/png;base64");
-					resp.getWriter().print(((Text)groove.getProperty("img")).getValue().substring(22));
+					resp.setContentType("image/png");
+//					resp.setContentLength(stuff.length());
 				}
+
+				//for (int i = 0; i < imgarray.length; i++) {
+				//	resp.getWriter().print(stuff);
+				//}
+				resp.getWriter().print(((Text)groove.getProperty("img")).getValue());
 			}
 			else if (groove.getProperty("code") == null) {
 				resp.setContentType("text/plain");
@@ -75,8 +78,11 @@ public class DoodleMeServlet extends HttpServlet{
 
 		Entity doodle = new Entity("Doodles");
 		doodle.setProperty("xy", new Text(req.getParameter("xy")));
-		if (req.getParameter("img") != null)
+		if (req.getParameter("img") != null){
 			doodle.setProperty("img", new Text(req.getParameter("img")));
+			
+			//doodle.setProperty("img", new Blob(Base64.decodeBase64(req.getParameter("img"))));
+		}
 		
 		String code = req.getParameter("code");
 		if (code != null) {
@@ -91,4 +97,6 @@ public class DoodleMeServlet extends HttpServlet{
 		else
 			resp.getWriter().print("bad");
 	}
+	
+
 }

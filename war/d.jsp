@@ -1,4 +1,8 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %><%@ page import="java.util.List" %><%@ page import="com.google.appengine.api.users.User" %><%@ page import="com.google.appengine.api.users.UserService" %><%@ page import="com.google.appengine.api.users.UserServiceFactory" %><%@ page import="com.google.appengine.api.datastore.DatastoreServiceFactory" %><%@ page import="com.google.appengine.api.datastore.DatastoreService" %><%@ page import="com.google.appengine.api.datastore.Query" %><%@ page import="com.google.appengine.api.datastore.Entity" %><%@ page import="com.google.appengine.api.datastore.FetchOptions" %><%@ page import="com.google.appengine.api.datastore.Key" %><%@ page import="com.google.appengine.api.datastore.KeyFactory" %><%@ page import="com.google.appengine.api.datastore.Text" %><%
+<%@ page contentType="text/html;charset=UTF-8" language="java" %><%@ page import="java.util.List" %><%@ page import="com.google.appengine.api.users.User" %><%@ page import="com.google.appengine.api.users.UserService" %><%@ page import="com.google.appengine.api.users.UserServiceFactory" %><%@ page import="com.google.appengine.api.datastore.DatastoreServiceFactory" %><%@ page import="com.google.appengine.api.datastore.DatastoreService" %><%@ page import="com.google.appengine.api.datastore.Query" %><%@ page import="com.google.appengine.api.datastore.Entity" %><%@ page import="com.google.appengine.api.datastore.FetchOptions" %><%@ page import="com.google.appengine.api.datastore.Key" %><%@ page import="com.google.appengine.api.datastore.KeyFactory" %><%@ page import="com.google.appengine.api.datastore.Text" %><%@ page import="com.google.appengine.api.blobstore.BlobstoreServiceFactory" %><%@ page import="com.google.appengine.api.blobstore.BlobstoreService" %><%
+
+
+BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService();
+
 Entity doodle = null;
 String id = request.getParameter("id");
 String saclient = request.getParameter("aclient");
@@ -46,6 +50,18 @@ else {
 <meta charset="utf-8" />        
 
 <script>
+
+//from: http://stackoverflow.com/a/5303242/945521
+if ( XMLHttpRequest.prototype.sendAsBinary === undefined ) {
+ XMLHttpRequest.prototype.sendAsBinary = function(string) {
+     var bytes = Array.prototype.map.call(string, function(c) {
+         return c.charCodeAt(0) & 0xff;
+     });
+     this.send(new Uint8Array(bytes).buffer);
+ };
+};
+
+
 var id = 0;
 var viewer;
 window.onload = function() {
@@ -117,7 +133,8 @@ function draw(){
 	var xsize = c.clientWidth;
 	var ysize = c.clientHeight;
 	
-	ctx.clearRect(0, 0, c.width, c.height);	
+	ctx.fillStyle = "black";
+	ctx.fillRect(0, 0, c.width, c.height);	
 	
 	for (var ip = 0; ip < viewer.paths.length; ip++){
 		ctx.beginPath();
@@ -270,7 +287,32 @@ function undoButton(){
 }
 
 function facebookButton(){
-	shareButton('https://www.facebook.com/sharer/sharer.php?t=YouGotADoodle&u=https%3A%2F%2Fyougotadoodle.appspot.com%2Fd.jsp');
+
+	postCanvasToFacebook();
+/*	FB.ui(
+		      {
+		       method: 'feed',
+		       name: 'The Facebook SDK for Javascript',
+		       caption: 'Bringing Facebook to the desktop and mobile web',
+		       description: (
+		          'A small JavaScript library that allows you to harness ' +
+		          'the power of Facebook, bringing the user\'s identity, ' +
+		          'social graph and distribution power to your site.'
+		       ),
+		       link: 'https://developers.facebook.com/docs/reference/javascript/',
+		       picture: 'http://www.fbrell.com/public/f8.jpg'
+		      },
+		      function(response) {
+		        if (response && response.post_id) {
+		          alert('Post was published.');
+		        } else {
+		          alert('Post was not published.');
+		        }
+		      }
+		    );
+	*/
+	
+	//shareButton('https://www.facebook.com/sharer/sharer.php?t=YouGotADoodle&u=https%3A%2F%2Fyougotadoodle.appspot.com%2Fd.jsp');
 }
 
 function twitterButton(){
@@ -316,6 +358,7 @@ function shareButton(url){
 
 	
 	var c = document.getElementById("mainCanvas")
+	//var data = c.toDataURL().substr(22);
 	var data = c.toDataURL();
 
 	if (viewer.paths.length == 0){
@@ -330,24 +373,40 @@ function shareButton(url){
 	}
 	else {
 		var doodle = makeDoodle();
-		
-		
-		
-		var xhr = new XMLHttpRequest();
-		xhr.open("POST", "/d", true);
-		xhr.onreadystatechange = function(){
-			if (xhr.readyState == 4){
-				var nid = xhr.responseText;
-				url = url + '%3Fid%3D' + nid ;
-				window.location = url; 
-				//var newWindow = window.open(url, "share"); 
-				id = nid;
-			}
-		}
-		xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-		var params = "xy=" + doodle + "&img=" + data;
 
-		xhr.send(params);
+		//var formData = new FormData();
+        
+		//var uploadImage = new XMLHttpRequest();
+		//uploadImage.open("POST", uploadUrl, true);
+		//uploadImage.onreadystatechange = function(){
+		//	if (uploadImage.readyState == 4){
+
+		//		var image = uploadImage.responseText;
+		//		console.log(image);
+				
+				var xhr = new XMLHttpRequest();
+				xhr.open("POST", "/d", true);
+				xhr.onreadystatechange = function(){
+					if (xhr.readyState == 4){
+						var nid = xhr.responseText;
+						url = url + '%3Fid%3D' + nid ;
+						window.location = url; 
+						//var newWindow = window.open(url, "share"); 
+						id = nid;
+					}
+				}
+				xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+				var params = "xy=" + doodle + "&img=" + encodeURIComponent(data);
+				console.log(data);
+				xhr.send(params);
+
+//			}
+//		};
+//        formData.append("myFile", data);
+
+//		uploadImage.send(formData);
+		
 	}
 }
 
@@ -378,11 +437,73 @@ function setCanvasSize() {
 	c.style.height = height + "px";
 	c.height = height;
 	c.width = width;
-	c.getContext("2d").lineWidth = 5;
+	
+	var ctx = c.getContext("2d");
+	ctx.lineWidth = 5;
+	ctx.fillStyle = "black";
+	ctx.fillRect(0, 0, c.width, c.height);
+	
+	
 }
 
+
+function postImageToFacebook( authToken, filename, mimeType, imageData, message )
+{
+    // this is the multipart/form-data boundary we'll use
+    var boundary = '----ThisIsTheBoundary1234567890';   
+    // let's encode our image file, which is contained in the var
+    var formData = '--' + boundary + '\r\n'
+    formData += 'Content-Disposition: form-data; name="source"; filename="' + filename + '"\r\n';
+    formData += 'Content-Type: ' + mimeType + '\r\n\r\n';
+    for ( var i = 0; i < imageData.length; ++i )
+    {
+        formData += String.fromCharCode( imageData[ i ] & 0xff );
+    }
+    formData += '\r\n';
+    formData += '--' + boundary + '\r\n';
+    formData += 'Content-Disposition: form-data; name="message"\r\n\r\n';
+    formData += message + '\r\n'
+    formData += '--' + boundary + '--\r\n';
+    
+    var xhr = new XMLHttpRequest();
+    xhr.open( 'POST', 'https://graph.facebook.com/me/photos?access_token=' + authToken, true );
+    xhr.onload = function () {
+    	var posted = document.getElementById("posted-to-facebook");
+    	posted.style.display = "block";
+    	setTimeout(function () {
+    		posted.style.display = "none";
+    	}, 5000);
+    };
+	xhr.onerror = function() {
+        console.log( xhr.responseText );
+    };
+    xhr.setRequestHeader( "Content-Type", "multipart/form-data; boundary=" + boundary );
+    xhr.sendAsBinary( formData );
+};
+
+function postCanvasToFacebook() {
+	var canvas = document.getElementById("mainCanvas");
+	var data = canvas.toDataURL("image/png");
+	var encodedPng = data.substring(data.indexOf(',') + 1, data.length);
+	var decodedPng = Base64Binary.decode(encodedPng);
+	FB.getLoginStatus(function(response) {
+	  if (response.status === "connected") {	
+		postImageToFacebook(response.authResponse.accessToken, "huh", "image/png", decodedPng, "Made at http://yougotadoodle.com");
+	  } else if (response.status === "not_authorized") {
+		 FB.login(function(response) {
+			postImageToFacebook(response.authResponse.accessToken, "huh", "image/png", decodedPng, "Made at http://yougotadoodle.com");
+		 }, {scope: "publish_stream"});
+	  } else {
+		 FB.login(function(response)  { 
+			postImageToFacebook(response.authResponse.accessToken, "huh", "image/png", decodedPng, "Made at http://yougotadoodle.com");
+		 }, {scope: "publish_stream"});
+	  }
+	 });
+
+};
 </script>
 
+<script src="base64binary.js"></script>
 
 <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 
@@ -456,13 +577,14 @@ padding:0px;
 }
 
 
-#mainCanvas {border-radius:5px;
+#mainCanvas {
+	border:1px solid #c3c3c3;
+	border-radius:5px;
 	position:absolute;
 	top:150px;
 	left:130px;
 	width:400px;
 	height:300px;
-	background-color:black;
 }
 .color_box {
 	line-height:10px;
@@ -595,6 +717,21 @@ right:6px;
 /*a, a:visited {color:white;}*/
 
 .warning {color:red;}
+
+#posted-to-facebook {
+	border-width:4px;
+	border-color:gray;
+	border-style:solid;
+	border-radius:7px;
+	background-color:white;
+	font-size:20pt;
+	width:50%;
+	position:absolute;
+	left:5px;
+	top:5px;
+	display:none;
+	padding:20px;
+}
 </style>
 <meta property="og:image" content="http://yougotadoodle.appspot.com/img/yougotadoodle.png" />
 <meta property="og:description" content="Make your emails, texts, and tweets more personal, more fun, and more you!" />
@@ -608,6 +745,26 @@ right:6px;
 </head>
 
 <body>
+
+<div id="fb-root"></div>
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '108330069340139',
+      status     : true,
+      xfbml      : true
+    });
+  };
+
+  (function(d, s, id){
+     var js, fjs = d.getElementsByTagName(s)[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement(s); js.id = id;
+     js.src = "//connect.facebook.net/en_US/all.js";
+     fjs.parentNode.insertBefore(js, fjs);
+   }(document, 'script', 'facebook-jssdk'));
+</script>
+
 
 <div id="button_row">
 
@@ -649,7 +806,7 @@ Clear
 <div id="bottomline">Try <a href="http://monadpad.com">our</a> 
 <a href="http://sketchatune.com">Music</a> and <a href="http://cloudmoviecompany.com">Animation</a> Apps</a></div>
 
-<canvas id="mainCanvas" width="300" height="400" style="background-color:black;border:1px solid #c3c3c3;">
+<canvas id="mainCanvas" width="300" height="400">
 Your browser does not support the canvas element.
 </canvas>
 
@@ -681,6 +838,10 @@ Url + Code: <input type="text" id="doodle-url-with-code" value=""/>
 <a href='http://yougotadoodle.appspot.com/d.jsp?id=<%= id %>'>I already have the App!</a>
 <br/>or<br/>
 <a href="#" id="close_android_ad">(no thanks, close dialog)</a>
+</div>
+
+<div id="posted-to-facebook">
+This Doodle has been posted to your Facebook page!
 </div>
 
 <div id="ismobile">

@@ -32,6 +32,15 @@
 		<url-pattern>/ahelp</url-pattern>
 	</servlet-mapping>
 
+    <servlet>
+        <servlet-name>UploadServlet</servlet-name>
+        <servlet-class>com.monadpad.doodleme.UploadServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>UploadServlet</servlet-name>
+        <url-pattern>/upload</url-pattern>
+    </servlet-mapping>
+
 	<welcome-file-list>
 		<welcome-file>d.jsp</welcome-file>
 	</welcome-file-list>
